@@ -1,0 +1,40 @@
+name: CI
+
+# Se dispara al abrir un Pull Request y cada vez que se actualiza la rama del PR.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  test-and-build:
+    name: Tests y build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Lint (ESLint)
+        run: npm run lint
+
+      - name: Ejecutar tests unitarios con coverage
+        run: npm run test:coverage
+
+      - name: Subir reporte de coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+
+      - name: Build del proyecto
+        run: npm run build
