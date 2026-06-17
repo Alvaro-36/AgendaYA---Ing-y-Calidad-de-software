@@ -21,3 +21,41 @@ describe('reagendar evento', () => {
 		expect(() => evento.cambiarFecha(new Date())).toThrow('El evento ya esta completado');
 	});
 });
+
+
+describe('ver detalle evento', () => {
+	it('Debe mostrar el detalle del evento', () => {
+		const eventoPrueba = new Evento('1', 'pendiente', new Date(), 'Consulta de prueba', '123456789', 'Juan Pérez');
+		expect(eventoPrueba.obtenerDetelle()).toEqual({
+			id: '1',
+			estado: 'pendiente',
+			fechaHora: eventoPrueba.obtenerFechaHora(),
+			descripcion: 'Consulta de prueba',
+			telefono: '123456789',
+			nombre: 'Juan Pérez',
+		})
+	});
+
+});
+
+
+describe('MO5 US2 Cancelación Reserva', () => {
+
+	it('Debe cambiar el estado de la reserva a cancelada', () => {
+		const evento = new Evento('1', 'confirmado', new Date('2025-06-20T10:00:00'), 'Consulta general', '3001234567', 'Ana Torres');
+
+		evento.cancelarEvento();
+
+		expect(evento.obtenerEstado()).toBe('cancelado');
+
+	});
+
+	it('No debe poder cancelarse una reserva que ya fue completada', () => {
+		const evento = new Evento('3', 'confirmado', new Date('2025-06-10T10:00:00'), 'Ortodoncia', '3007778899', 'Sofía Vargas');
+
+		evento.marcarComoCompletado();
+
+		expect(() => evento.cancelarEvento()).toThrow('El evento ya esta completado');
+	});
+
+});
