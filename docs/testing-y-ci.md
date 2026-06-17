@@ -53,8 +53,11 @@ el mock genera la disponibilidad **relativa a `hoy`** (hoy+1, hoy+3, hoy+8), por
 
 #### `tests/domain/evento.test.ts`
 
-Test unitario de la entidad `Evento`: al llamar `marcarComoCompletado()` el estado pasa a
-`"completado"`.
+Test unitario de la entidad `Evento`:
+
+1. **El evento debería pasar a estado completado** — Al llamar `marcarComoCompletado()` el estado pasa a `"completado"`.
+2. **Se debe poder reagendar el evento** — Al llamar `cambiarFecha(fecha)` el atributo `fechaHora` se actualiza con el nuevo valor.
+3. **No se debe poder reagendar el evento si está completado** — Si se intenta llamar `cambiarFecha()` en un evento con estado `"completado"`, se debe lanzar una excepción con el mensaje `"El evento ya esta completado"`.
 
 #### `tests/lib/sum.example.test.ts`
 
