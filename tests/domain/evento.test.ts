@@ -59,3 +59,16 @@ describe('MO5 US2 Cancelación Reserva', () => {
 	});
 
 });
+
+describe('creacion de evento con valores por defecto y getters', () => {
+	it('Debe inicializar con los valores por defecto y permitir obtenerlos', () => {
+		const fechaAntes = new Date();
+		const evento = new Evento();
+		expect(evento.obtenerId()).toBe('');
+		expect(evento.obtenerEstado()).toBe('pendiente');
+		expect(evento.obtenerFechaHora().getTime()).toBeGreaterThanOrEqual(fechaAntes.getTime());
+		expect(evento.obtenerDescripcion()).toBe('');
+		expect(evento.obtenerTelefono()).toBe('');
+		expect(evento.obtenerNombre()).toBe('');
+	});
+});
