@@ -34,7 +34,7 @@ export class Evento {
 		return this.fechaHora;
 	}
 
-	obtenerDetalle(): string {
+	obtenerDescripcion(): string {
 		return this.descripcion;
 	}
 
@@ -57,7 +57,15 @@ export class Evento {
 		this.fechaHora = fechaHora;
 	}
 
-	obtenerDetelle(evento: Evento): {
+	cancelarEvento(): void {
+		if (this.estado === 'completado') {
+			throw new Error('El evento ya esta completado');
+		}
+		this.estado = 'cancelado';
+	}
+
+
+	obtenerDetalle(): {
 		id: string;
 		estado: string;
 		fechaHora: Date;
@@ -66,12 +74,12 @@ export class Evento {
 		nombre: string;
 	} {
 		return {
-			id: evento.id,
-			estado: evento.estado,
-			fechaHora: evento.fechaHora,
-			descripcion: evento.descripcion,
-			telefono: evento.telefono,
-			nombre: evento.nombre,
+			id: this.id,
+			estado: this.estado,
+			fechaHora: this.fechaHora,
+			descripcion: this.descripcion,
+			telefono: this.telefono,
+			nombre: this.nombre,
 		};
 	}
 }

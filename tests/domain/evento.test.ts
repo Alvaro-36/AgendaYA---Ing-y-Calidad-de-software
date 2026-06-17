@@ -26,7 +26,7 @@ describe('reagendar evento', () => {
 describe('ver detalle evento', () => {
 	it('Debe mostrar el detalle del evento', () => {
 		const eventoPrueba = new Evento('1', 'pendiente', new Date(), 'Consulta de prueba', '123456789', 'Juan Pérez');
-		expect(eventoPrueba.obtenerDetelle()).toEqual({
+		expect(eventoPrueba.obtenerDetalle()).toEqual({
 			id: '1',
 			estado: 'pendiente',
 			fechaHora: eventoPrueba.obtenerFechaHora(),
