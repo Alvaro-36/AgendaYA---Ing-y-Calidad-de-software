@@ -23,8 +23,18 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
-      - name: Ejecutar tests unitarios
-        run: npm test
+      - name: Lint (ESLint)
+        run: npm run lint
+
+      - name: Ejecutar tests unitarios con coverage
+        run: npm run test:coverage
+
+      - name: Subir reporte de coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
 
       - name: Build del proyecto
         run: npm run build
