@@ -1,4 +1,4 @@
-import { Evento } from '@/model/evento';
+import { Evento } from '@/domain/entities/evento';
 
 describe('evento', () => {
 	it('El evento deberia pasar a estado completado', () => {
