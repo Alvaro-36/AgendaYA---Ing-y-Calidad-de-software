@@ -23,7 +23,7 @@ describe('reagendar evento', () => {
 });
 
 
-describe('ver detalle evento', () => {
+describe('MO5 US4 ver detalle evento', () => {
 	it('Debe mostrar el detalle del evento', () => {
 		const eventoPrueba = new Evento('1', 'pendiente', new Date(), 'Consulta de prueba', '123456789', 'Juan Pérez');
 		expect(eventoPrueba.obtenerDetalle()).toEqual({
