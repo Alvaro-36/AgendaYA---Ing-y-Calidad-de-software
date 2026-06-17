@@ -20,6 +20,13 @@ npm run test:coverage
 - `jest.setup.ts`: setup global de tests (`@testing-library/jest-dom`).
 - `src/lib/sum.example.test.ts`: **SOLO EJEMPLO** de test unitario para mostrar formato.
 
+## Estructura del proyecto
+
+- `src/model`: entidades de dominio como `Evento`.
+- `src/driver`: adaptadores o implementaciones de infraestructura.
+- `src/api`: capa de entrada para endpoints o controladores.
+- `src/app`: UI y rutas del App Router de Next.js.
+
 ## Importante
 
 El archivo `src/lib/sum.example.test.ts` esta incluido unicamente como referencia del formato de un test unitario.
