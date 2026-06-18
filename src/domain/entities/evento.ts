@@ -64,6 +64,19 @@ export class Evento {
 		this.estado = 'cancelado';
 	}
 
+	completarAutomaticamente(fechaActual: Date, duracionMinutos: number): void {
+		if (this.estado !== 'confirmado') {
+			return;
+		}
+
+		const finDelEventoMs = this.fechaHora.getTime() + duracionMinutos * 60000;
+		const limite24HsMs = finDelEventoMs + 24 * 60 * 60000;
+
+		if (fechaActual.getTime() >= limite24HsMs) {
+			this.marcarComoCompletado();
+		}
+	}
+
 
 	obtenerDetalle(): {
 		id: string;
