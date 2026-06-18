@@ -112,4 +112,15 @@ describe('M05-US13 - Completar evento automáticamente', () => {
 		
 		expect(evento.obtenerEstado()).toBe('confirmado');
 	});
+	
+	it('Escenario 4: Evento ya completado no se modifica aunque pasen más de 24hs', () => {
+  		const fechaHoraEvento = new Date('2026-06-18T10:00:00');
+  		const evento = new Evento('4', 'completado', fechaHoraEvento, 'Turno ya completado', '123', 'Pedro');
+  		const duracionMinutos = 60; // Termina 11:00
+  		const fechaActual = new Date('2026-06-19T12:00:00'); // más de 24h después de la finalización
+
+  		evento.completarAutomaticamente(fechaActual, duracionMinutos);
+
+  		expect(evento.obtenerEstado()).toBe('completado');
+	});
 });
