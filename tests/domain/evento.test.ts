@@ -72,3 +72,44 @@ describe('creacion de evento con valores por defecto y getters', () => {
 		expect(evento.obtenerNombre()).toBe('');
 	});
 });
+
+describe('M05-US13 - Completar evento automáticamente', () => {
+	it('Escenario 1: Completar automáticamente un evento tras 24hs de finalizar (estado confirmado)', () => {
+		const fechaHoraEvento = new Date('2026-06-18T10:00:00');
+		const evento = new Evento('1', 'confirmado', fechaHoraEvento, 'Turno medico', '123', 'Juan');
+		const duracionMinutos = 60; // Termina 11:00
+		
+		// 24 horas exactas después de que finalizaría el evento
+		const fechaActual = new Date('2026-06-19T11:00:00');
+		
+		evento.completarAutomaticamente(fechaActual, duracionMinutos);
+		
+		expect(evento.obtenerEstado()).toBe('completado');
+	});
+
+	it('Escenario 2: Evento cancelado previamente no se modifica', () => {
+		const fechaHoraEvento = new Date('2026-06-18T10:00:00');
+		const evento = new Evento('2', 'cancelado', fechaHoraEvento, 'Turno cancelado', '123', 'Maria');
+		const duracionMinutos = 60; // Termina 11:00
+		
+		// Pasadas más de 24hs
+		const fechaActual = new Date('2026-06-19T12:00:00');
+		
+		evento.completarAutomaticamente(fechaActual, duracionMinutos);
+		
+		expect(evento.obtenerEstado()).toBe('cancelado');
+	});
+
+	it('Escenario 3: No completar evento si no pasaron las 24 horas después de la finalización (borde)', () => {
+		const fechaHoraEvento = new Date('2026-06-18T10:00:00');
+		const evento = new Evento('3', 'confirmado', fechaHoraEvento, 'Turno borde', '123', 'Jose');
+		const duracionMinutos = 60; // Termina 11:00
+		
+		// 23 horas y 59 minutos después de que finalizaría
+		const fechaActual = new Date('2026-06-19T10:59:00');
+		
+		evento.completarAutomaticamente(fechaActual, duracionMinutos);
+		
+		expect(evento.obtenerEstado()).toBe('confirmado');
+	});
+});
