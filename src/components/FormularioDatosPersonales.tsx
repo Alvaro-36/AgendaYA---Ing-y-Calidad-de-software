@@ -6,16 +6,19 @@ export interface DatosPersonales {
 	nombre: string;
 	email: string;
 	telefono?: string;
+	nota?: string;
 }
 
 export interface FormularioDatosPersonalesProps {
 	onSubmit: (datos: DatosPersonales) => void;
+	onCancel?: () => void;
 }
 
-export default function FormularioDatosPersonales({ onSubmit }: FormularioDatosPersonalesProps) {
+export default function FormularioDatosPersonales({ onSubmit, onCancel }: FormularioDatosPersonalesProps) {
 	const [nombre, setNombre] = useState('');
 	const [email, setEmail] = useState('');
 	const [telefono, setTelefono] = useState('');
+	const [nota, setNota] = useState('');
 
 	const [errores, setErrores] = useState<{ nombre?: string; email?: string }>({});
 
@@ -41,8 +44,17 @@ export default function FormularioDatosPersonales({ onSubmit }: FormularioDatosP
 		}
 
 		setErrores({});
-		onSubmit({ nombre, email, telefono: telefono.trim() });
+		onSubmit({ nombre, email, telefono: telefono.trim(), nota: nota.trim() });
 	};
+
+	const handleCancel = () => {
+    	setNombre('');
+    	setEmail('');
+    	setTelefono('');
+    	setNota('');
+    	setErrores({});
+    	if (onCancel) onCancel();
+  	};
 
 	return (
 		<form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4 p-4 border rounded-xl bg-white max-w-sm">
@@ -83,12 +95,33 @@ export default function FormularioDatosPersonales({ onSubmit }: FormularioDatosP
 				/>
 			</div>
 
-			<button 
-				type="submit"
-				className="mt-2 rounded-md bg-indigo-600 py-2 font-medium text-white hover:bg-indigo-700"
-			>
-				Continuar
-			</button>
+			<div className="flex flex-col gap-1">
+        		<label htmlFor="nota" className="text-sm font-medium text-zinc-700">Nota para el administrador (opcional)</label>
+        		<textarea
+          			id="nota"
+          		value={nota}
+          		onChange={(e) => setNota(e.target.value)}
+          		rows={3}
+          		className="border border-zinc-300 rounded-md p-2 text-zinc-900 resize-vertical"
+          		placeholder="Ej: Prefiero atención virtual, necesito silla de ruedas, etc."
+        		/>
+      		</div>
+
+			<div className="flex gap-2 mt-2">
+				<button
+          			type="button"
+          			onClick={handleCancel}
+          			className="flex-1 rounded-md border border-zinc-300 py-2 font-medium text-zinc-700 hover:bg-zinc-50"
+        		>
+          			Cancelar
+        		</button>
+        		<button
+          			type="submit"
+          			className="flex-1 rounded-md bg-indigo-600 py-2 font-medium text-white hover:bg-indigo-700"
+        		>
+          			Continuar
+        		</button>
+      		</div>
 		</form>
 	);
 }

@@ -3,20 +3,21 @@ import userEvent from '@testing-library/user-event';
 import FormularioDatosPersonales from '@/components/FormularioDatosPersonales';
 
 describe('FormularioDatosPersonales', () => {
-	it('Escenario 1 y 4: Ingreso correcto con telefono vacio permite continuar', async () => {
+	it('Escenario 1 y 4: Ingreso correcto con telefono y nota vacios permite continuar', async () => {
 		const user = userEvent.setup();
 		const handleSubmit = jest.fn();
 		render(<FormularioDatosPersonales onSubmit={handleSubmit} />);
 
 		await user.type(screen.getByLabelText(/Nombre completo/i), 'Juan Perez');
 		await user.type(screen.getByLabelText(/Correo electrónico/i), 'juan@example.com');
-		
+
 		await user.click(screen.getByRole('button', { name: /Continuar/i }));
 
 		expect(handleSubmit).toHaveBeenCalledWith({
 			nombre: 'Juan Perez',
 			email: 'juan@example.com',
-			telefono: ''
+			telefono: '',
+			nota: ''
 		});
 	});
 
@@ -56,4 +57,16 @@ describe('FormularioDatosPersonales', () => {
 		expect(screen.getAllByText('Campo obligatorio').length).toBe(2);
 		expect(handleSubmit).not.toHaveBeenCalled();
 	});
+
+	  it('Escenario 6: Al hacer clic en Cancelar se ejecuta onCancel', async () => {
+    const user = userEvent.setup();
+    const handleSubmit = jest.fn();
+    const handleCancel = jest.fn();
+    render(<FormularioDatosPersonales onSubmit={handleSubmit} onCancel={handleCancel} />);
+
+    await user.click(screen.getByRole('button', { name: /Cancelar/i }));
+
+    expect(handleCancel).toHaveBeenCalledTimes(1);
+    expect(handleSubmit).not.toHaveBeenCalled();
+  });
 });
