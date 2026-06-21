@@ -1,92 +1,70 @@
-import { editarDatosReserva, getResumenReserva, Reserva, DatosReserva } from '@/domain/services/editarReserva';
+import { editarDatosReserva, getResumenReserva, Reserva } from '@/domain/services/editarReserva';
 
-describe('Editar Reserva - M04_US5', () => {
-  it('Escenario 1 — Edición exitosa antes de confirmar', () => {
-    const reserva: Reserva = {
-      id: 'r-1',
-      datos: {
-        profesional: 'Dr. X',
-        especialidad: 'Cardio',
-        tipoConsulta: 'Consulta inicial',
-        duracion: 30,
-        fecha: '2026-07-01',
-        horario: '09:00',
-        descripcion: 'Consulta general',
-        modalidad: 'presencial',
-        pacienteNombre: 'Juan Perez',
-        pacienteEmail: 'juan@example.com'
-      },
-      estado: 'en_proceso'
+describe('editarDatosReserva (M04_US5)', () => {
+  const baseReserva: Reserva = {
+    id: 'r1',
+    estado: 'en_proceso',
+    datos: {
+      profesional: 'Dr. X',
+      especialidad: 'Cardiología',
+      tipoConsulta: 'Consulta inicial',
+      duracion: 30,
+      fecha: '2026-07-01',
+      horario: '09:00',
+      descripcion: 'Primera consulta',
+      modalidad: 'presencial',
+      pacienteNombre: 'Juan Perez',
+      pacienteEmail: 'juan@example.com'
+    }
+  };
+
+  it('Escenario 1 — edición exitosa antes de confirmar: actualiza datos y resumen, estado permanece pendiente', () => {
+    const cambios = {
+      pacienteNombre: 'Juan Pablo Moreno',
+      pacienteEmail: 'juan.moreno@example.com',
+      descripcion: 'Cambio de nota'
     };
 
-    const cambios: Partial<DatosReserva> = {
-      pacienteNombre: 'Juan P. Actualizado',
-      pacienteEmail: 'juan.actualizado@example.com'
-    };
+    const nueva = editarDatosReserva(baseReserva, cambios);
 
-    const actualizado = editarDatosReserva(reserva, cambios);
+    // Nuevo objeto con datos actualizados
+    expect(nueva).not.toBe(baseReserva);
+    expect(nueva.datos.pacienteNombre).toBe(cambios.pacienteNombre);
+    expect(nueva.datos.pacienteEmail).toBe(cambios.pacienteEmail);
+    expect(nueva.datos.descripcion).toBe(cambios.descripcion);
 
-    expect(actualizado.datos.pacienteNombre).toBe('Juan P. Actualizado');
-    expect(actualizado.datos.pacienteEmail).toBe('juan.actualizado@example.com');
-    expect(actualizado.estado).toBe('en_proceso');
+    // Resumen refleja los nuevos datos
+    const resumen = getResumenReserva(nueva);
+    expect(resumen.pacienteNombre).toBe(cambios.pacienteNombre);
+    expect(resumen.pacienteEmail).toBe(cambios.pacienteEmail);
+    expect(resumen.fecha).toBe(baseReserva.datos.fecha);
+    expect(resumen.horario).toBe(baseReserva.datos.horario);
 
-    const resumen = getResumenReserva(actualizado);
-    expect(resumen.pacienteNombre).toBe('Juan P. Actualizado');
-    expect(resumen.pacienteEmail).toBe('juan.actualizado@example.com');
+    // Estado no cambia a confirmada
+    expect(nueva.estado).toBe('en_proceso');
   });
 
-  it('Escenario 2 — Validación de datos modificados', () => {
-    const reserva: Reserva = {
-      id: 'r-2',
-      datos: {
-        profesional: 'Dr. Y',
-        especialidad: 'Dermato',
-        tipoConsulta: 'Seguimiento',
-        duracion: 20,
-        fecha: '2026-07-02',
-        horario: '10:00',
-        descripcion: 'Control',
-        modalidad: 'virtual',
-        pacienteNombre: 'Ana Lopez',
-        pacienteEmail: 'ana@example.com'
-      },
-      estado: 'en_proceso'
-    };
+  it('Escenario 2 — validación de datos modificados: rechaza nombre o email inválido', () => {
+    // Nombre con números
+    expect(() => editarDatosReserva(baseReserva, { pacienteNombre: 'Juan123' })).toThrow('Nombre de paciente inválido');
 
-    // Nombre con numeros e email inválido
-    const cambios: Partial<DatosReserva> = {
-      pacienteNombre: 'Ana123',
-      pacienteEmail: 'not-an-email'
-    };
-
-    expect(() => editarDatosReserva(reserva, cambios)).toThrow(/inválid/i);
+    // Email inválido
+    expect(() => editarDatosReserva(baseReserva, { pacienteEmail: 'no-valido' })).toThrow('Email de paciente inválido');
   });
 
-  it('Escenario 3 — Cancelación de edición: no muta el original', () => {
-    const reserva: Reserva = {
-      id: 'r-3',
-      datos: {
-        profesional: 'Dr. Z',
-        especialidad: 'Pediatria',
-        tipoConsulta: 'Consulta',
-        duracion: 15,
-        fecha: '2026-07-03',
-        horario: '11:00',
-        descripcion: '',
-        modalidad: 'presencial',
-        pacienteNombre: 'Carlos Ruiz',
-        pacienteEmail: 'carlos@example.com'
-      },
-      estado: 'en_proceso'
-    };
+  it('Escenario 3 — cancelación de edición (no muta la reserva original)', () => {
+    const cambios = { pacienteNombre: 'Nombre Temporal', pacienteEmail: 'temp@example.com' };
 
-    const cambios: Partial<DatosReserva> = { pacienteNombre: 'Temporal Cambio' };
+    const copia = editarDatosReserva(baseReserva, cambios);
 
-    const copia = editarDatosReserva(reserva, cambios);
+    // La función devuelve una nueva instancia con cambios
+    expect(copia.datos.pacienteNombre).toBe('Nombre Temporal');
 
-    // Simulo que el usuario cancela: no aplico la copia al original.
-    // Verifico que la función no mutó el objeto original y devolvió una nueva versión.
-    expect(reserva.datos.pacienteNombre).toBe('Carlos Ruiz');
-    expect(copia.datos.pacienteNombre).toBe('Temporal Cambio');
+    // Pero la reserva original no fue mutada (permite cancelar edición conservando datos originales)
+    expect(baseReserva.datos.pacienteNombre).toBe('Juan Perez');
+    expect(baseReserva.datos.pacienteEmail).toBe('juan@example.com');
+
+    // Editar no confirma automáticamente
+    expect(copia.estado).toBe('en_proceso');
   });
 });
