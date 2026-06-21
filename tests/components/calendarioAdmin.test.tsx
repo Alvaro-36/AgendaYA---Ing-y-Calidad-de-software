@@ -52,7 +52,7 @@ describe('CalendarioAdmin - Criterios del Calendario', () => {
 		expect(within(calendario).getByText(/julio 2026/i)).toBeInTheDocument();
 
 		// En julio, el día 5 tiene reserva (círculo gris)
-		const dia5Julio = within(calendario).getByRole('button', { name: /5/ });
+		const dia5Julio = within(calendario).getByRole('button', { name: '5, con reservas' });
 		expect(dia5Julio).toHaveClass('bg-zinc-200');
 	});
 
@@ -93,7 +93,7 @@ describe('CalendarioAdmin - Criterios del Panel de Reservas', () => {
 		render(<CalendarioAdmin hoy={HOY} turnos={[t1, t2, t3]} />);
 
 		const panel = screen.getByRole('region', { name: 'Reservas del día' });
-		
+
 		// Verificamos que la información detallada esté en el panel
 		expect(within(panel).getByText('Carlos Gomez')).toBeInTheDocument();
 		expect(within(panel).getByText('11:30 hs')).toBeInTheDocument();
@@ -121,10 +121,10 @@ describe('CalendarioAdmin - Criterios del Panel de Reservas', () => {
 	it('Escenario 2 (Panel de citas): Día sin reservas muestra la ilustración/texto descriptivo y ninguna tarjeta vacía', async () => {
 		// Pasamos turnos para el 17 de junio, pero ningún turno para otros días
 		const t1 = new Evento('101', 'confirmado', new Date(2026, 5, 17, 11, 30), 'Consulta General', '11223344', 'Carlos Gomez');
-		
+
 		// Renderizamos, y el día seleccionado por defecto será HOY (17)
-		const { rerender } = render(<CalendarioAdmin hoy={HOY} turnos={[t1]} />);
-		
+		render(<CalendarioAdmin hoy={HOY} turnos={[t1]} />);
+
 		// Inicialmente, en el día 17 vemos la cita de Carlos
 		const panel = screen.getByRole('region', { name: 'Reservas del día' });
 		expect(within(panel).getByText('Carlos Gomez')).toBeInTheDocument();
@@ -133,14 +133,14 @@ describe('CalendarioAdmin - Criterios del Panel de Reservas', () => {
 		// Simulemos la selección del día 18 (que no tiene reservas) haciendo clic en él
 		const calendario = screen.getByRole('region', { name: 'Calendario de Administrador' });
 		const dia18 = within(calendario).getByRole('button', { name: '18' });
-		
+
 		// Hacemos clic en el día 18
 		const user = userEvent.setup();
 		await user.click(dia18);
 
 		// Verificamos que se muestre el texto de que no hay reservas
 		expect(screen.getByText('No hay reservas programadas para este día')).toBeInTheDocument();
-		
+
 		// Verificamos que no haya datos de paciente en el panel
 		expect(within(panel).queryByText('Carlos Gomez')).not.toBeInTheDocument();
 		expect(within(panel).queryByText('Teléfono:')).not.toBeInTheDocument();
@@ -168,13 +168,13 @@ describe('CalendarioAdmin - Criterios del Panel de Reservas', () => {
 		expect(within(panel).queryByText('Carlos Gomez')).not.toBeInTheDocument();
 
 		// Click rápido a día 19 (Con reservas) -> Muestra a Lucas Martinez
-		const dia19 = within(calendario).getByRole('button', { name: '19' });
+		const dia19 = within(calendario).getByRole('button', { name: /19/ });
 		await user.click(dia19);
 		expect(within(panel).getByText('Lucas Martinez')).toBeInTheDocument();
 		expect(within(panel).queryByText('Carlos Gomez')).not.toBeInTheDocument();
 
 		// Regresar rápido a día 17 -> Vuelve a mostrar a Carlos Gomez
-		const dia17 = within(calendario).getByRole('button', { name: '17' });
+		const dia17 = within(calendario).getByRole('button', { name: /17/ });
 		await user.click(dia17);
 		expect(within(panel).getByText('Carlos Gomez')).toBeInTheDocument();
 		expect(within(panel).queryByText('Lucas Martinez')).not.toBeInTheDocument();
